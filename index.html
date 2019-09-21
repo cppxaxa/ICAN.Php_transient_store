@@ -194,6 +194,12 @@ $(document).ready(function(){
 	recognition.interimResults = false;
 
 	$("#listen").click(function(){
+		var notification = document.querySelector('.mdl-js-snackbar');
+		notification.MaterialSnackbar.showSnackbar(
+			{
+				message: 'Listening'
+			}
+		);
 		recognition.start();
 	});
 
