@@ -178,23 +178,60 @@ input:focus, textarea:focus {
 
 </style>
 
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="css/material.indigo-pink.min.css">
+
+
 <script src="js/jquery.min.js"></script>
+<script defer src="js/material.min.js"></script>
+
 <script>
 $(document).ready(function(){
-    $('#button-blue').click(function() {
-        apiType = $('#api-type').val();
-        content = $('#comment').val();
+	const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+	const recognition = new SpeechRecognition();
+	
+	recognition.lang = 'en-US';
+	recognition.interimResults = false;
 
-        dummyUrl = ''
-        // dummyUrl = 'https://cppxaxa.000webhostapp.com';
+	$("#listen").click(function(){
+		recognition.start();
+	});
 
-        // alert('hello');
-        $.get(dummyUrl + '/api.php?' + apiType + '=' + content, function(data) {
-            
-        });
+	recognition.addEventListener('result', (e) => {
+		last = e.results.length - 1;
+		text = e.results[last][0].transcript;
+		
+		confidence = e.results[0][0].confidence;
 
-        $('#comment').val('');
-    });
+		dummyUrl = ''
+		// dummyUrl = 'https://cppxaxa.000webhostapp.com';
+
+		apiType = $('#api-type').val();
+		$.get(dummyUrl + '/api.php?' + apiType + '=' + text, function(data) {
+				
+		});
+
+		var notification = document.querySelector('.mdl-js-snackbar');
+		notification.MaterialSnackbar.showSnackbar(
+			{
+				message: 'User: ' + text
+			}
+		);
+	});
+
+	$('#button-blue').click(function() {
+			apiType = $('#api-type').val();
+			content = $('#comment').val();
+
+			dummyUrl = ''
+			// dummyUrl = 'https://cppxaxa.000webhostapp.com';
+
+			$.get(dummyUrl + '/api.php?' + apiType + '=' + content, function(data) {
+					
+			});
+
+			$('#comment').val('');
+	});
 });
 </script>
 
@@ -203,6 +240,11 @@ $(document).ready(function(){
 </head>
 
 <body>
+		<div id="demo-toast-example" class="mdl-js-snackbar mdl-snackbar">
+			<div class="mdl-snackbar__text"></div>
+			<button class="mdl-snackbar__action" type="button"></button>
+		</div>
+		
     <div id="form-main">
         <div id="form-div">
           <div class="form" id="form1">
@@ -213,7 +255,8 @@ $(document).ready(function(){
                   <option value="ChatApi">ChatApi</option>
                   <option value="MachineMessageApi">MachineMessageApi</option>
               </select>
-              
+							
+							<button class="mdl-button mdl-js-button mdl-button--fab mdl-button--colored" style="float: right;" id="listen"><i class="material-icons">mic_none</i></button>
             </p>
             
             <p class="text">
